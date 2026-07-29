@@ -6,12 +6,12 @@ const OPTIMIZED_ROUND_ROBIN = {
   reviewGate: {
     status: "awaiting-user-approval",
     message:
-      "Match 1 is complete and ready for review. No additional matchup will begin until the user approves continuation.",
+      "Match 2 is complete and its full narrative is published. Match 3 will remain paused until the user approves continuation.",
   },
   checkpoint: {
-    completedMatches: 1,
-    pendingMatches: 35,
-    nextMatchId: "orr-r01-m02-power-patron-dark-magician",
+    completedMatches: 2,
+    pendingMatches: 34,
+    nextMatchId: "orr-r01-m03-chaos-ritual-toon-turbo",
   },
   format: {
     match: "Best of 3",
@@ -55,7 +55,7 @@ const OPTIMIZED_ROUND_ROBIN = {
           deckA: "sky-striker",
           deckB: "kewl-tune",
           status: "complete",
-          reviewStatus: "awaiting-user-approval",
+          reviewStatus: "approved",
           result: {
             winner: "sky-striker",
             games: { "sky-striker": 2, "kewl-tune": 0 },
@@ -67,8 +67,12 @@ const OPTIMIZED_ROUND_ROBIN = {
           table: 2,
           deckA: "power-patron",
           deckB: "dark-magician",
-          status: "pending",
-          gateStatus: "blocked-by-match-1-review",
+          status: "complete",
+          reviewStatus: "awaiting-user-approval",
+          result: {
+            winner: "power-patron",
+            games: { "power-patron": 2, "dark-magician": 0 },
+          },
         },
         {
           id: "orr-r01-m03-chaos-ritual-toon-turbo",
@@ -77,6 +81,7 @@ const OPTIMIZED_ROUND_ROBIN = {
           deckA: "chaos-ritual",
           deckB: "toon-turbo",
           status: "pending",
+          gateStatus: "blocked-by-match-2-review",
         },
         {
           id: "orr-r01-m04-toon-elfnote",
@@ -442,3 +447,8 @@ OPTIMIZED_ROUND_ROBIN.renderedMatch = {
     },
   },
 };
+
+OPTIMIZED_ROUND_ROBIN.renderedMatches = [
+  OPTIMIZED_ROUND_ROBIN.renderedMatch,
+  OPTIMIZED_MATCH_002,
+];

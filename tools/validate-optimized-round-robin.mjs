@@ -16,6 +16,9 @@ const context = vm.createContext({});
 vm.runInContext(await read("data/rendered-matches.js"), context, {
   filename: "data/rendered-matches.js",
 });
+vm.runInContext(await read("data/optimized-match-002.js"), context, {
+  filename: "data/optimized-match-002.js",
+});
 vm.runInContext(
   `${await read("data/optimized-round-robin.js")}
 globalThis.__optimizedRoundRobin = OPTIMIZED_ROUND_ROBIN;
@@ -96,6 +99,7 @@ assert(
 const complete = matches.filter((match) => match.status === "complete");
 const pending = matches.filter((match) => match.status === "pending");
 const first = matches[0];
+const second = matches[1];
 assert(
   complete.length === rr.checkpoint.completedMatches &&
     pending.length === rr.checkpoint.pendingMatches &&
@@ -114,6 +118,22 @@ assert(
     first.result.games["kewl-tune"] === 0,
   "Match 1 must remain a 2-0 Sky Striker win.",
 );
+assert(
+  first.reviewStatus === "approved",
+  "Match 1 must remain approved before Match 2 can be published.",
+);
+assert(
+  second.id === "orr-r01-m02-power-patron-dark-magician" &&
+    second.deckA === "power-patron" &&
+    second.deckB === "dark-magician",
+  "Match 2 is not Power Patron vs. Dark Magician.",
+);
+assert(
+  second.result?.winner === "power-patron" &&
+    second.result.games["power-patron"] === 2 &&
+    second.result.games["dark-magician"] === 0,
+  "Match 2 must remain a 2-0 Power Patron win.",
+);
 const firstPending = pending[0];
 assert(
   firstPending?.id === rr.checkpoint.nextMatchId,
@@ -127,11 +147,11 @@ assert(
   "Completed results must advance sequentially through the published schedule.",
 );
 if (rr.reviewGate.status === "awaiting-user-approval") {
-  assert(first.reviewStatus === "awaiting-user-approval", "Match 1 must await user approval.");
+  assert(second.reviewStatus === "awaiting-user-approval", "Match 2 must await user approval.");
   assert(
-    firstPending?.id === "orr-r01-m02-power-patron-dark-magician" &&
-      firstPending.gateStatus === "blocked-by-match-1-review",
-    "Match 2 must remain visibly blocked by the Match 1 review.",
+    firstPending?.id === "orr-r01-m03-chaos-ritual-toon-turbo" &&
+      firstPending.gateStatus === "blocked-by-match-2-review",
+    "Match 3 must remain visibly blocked by the Match 2 review.",
   );
 }
 
@@ -143,15 +163,41 @@ assert(
 );
 assert(rr.renderedMatch.id === first.id, "The featured rendered match must point to Match 1.");
 assert(rr.renderedMatch.games.length === 2, "The full two-game narrative is missing.");
-const optimizedActions = rr.renderedMatch.games.flatMap((game) =>
+assert(
+  Array.isArray(rr.renderedMatches) &&
+    rr.renderedMatches.length === 2 &&
+    rr.renderedMatches[0].id === first.id &&
+    rr.renderedMatches[1].id === second.id,
+  "The two completed matches are not published in schedule order.",
+);
+const secondRendered = rr.renderedMatches[1];
+assert(secondRendered.games.length === 2, "Match 2's full two-game narrative is missing.");
+assert(
+  secondRendered.games.reduce(
+    (count, game) =>
+      count + game.turns.reduce((turnCount, turn) => turnCount + turn.actions.length, 0),
+    0,
+  ) === 65,
+  "Match 2 must retain all 65 certified presentation actions.",
+);
+assert(
+  secondRendered.verification?.matchCommitment ===
+    "0CC6565FC0E4247B8112440879D17C618526CBDF5798B5E019F9F84A78F03935",
+  "Match 2's certified match commitment changed.",
+);
+const optimizedActions = rr.renderedMatches.flatMap((match) =>
+  match.games.flatMap((game) =>
   game.turns.flatMap((turn) => turn.actions),
+  ),
 );
 assert(
   optimizedActions.some((action) => action.startsWith("Draw for turn.")),
   'The optimized narrative is missing the "Draw for turn" wording.',
 );
 assert(
-  !optimizedActions.some((action) => /^(Sky Striker|Kewl Tune) draws [^.]+\./.test(action)),
+  !optimizedActions.some((action) =>
+    /^(Sky Striker|Kewl Tune|Power Patron|Dark Magician) draws [^.]+\./.test(action),
+  ),
   "A turn-draw card name leaked into the optimized description narrative.",
 );
 assert(
@@ -188,8 +234,20 @@ new vm.Script(indexHtml.slice(inlineStart + "<script>\n".length, inlineEnd), {
 });
 assert(
   indexHtml.indexOf('src="data/rendered-matches.js"') <
-    indexHtml.indexOf('src="data/optimized-round-robin.js"'),
-  "Optimized data must load after the preserved rendered exhibition.",
+      indexHtml.indexOf('src="data/optimized-match-002.js"') &&
+    indexHtml.indexOf('src="data/optimized-match-002.js"') <
+      indexHtml.indexOf('src="data/optimized-round-robin.js"'),
+  "Optimized Match 2 must load between the preserved exhibition and tournament data.",
+);
+assert(
+  indexHtml.includes('src="data/optimized-card-extensions.js"'),
+  "The Match 2 clickable-card metadata extension is missing.",
+);
+const cardExtensionsSource = await read("data/optimized-card-extensions.js");
+assert(
+  cardExtensionsSource.includes('"Magistus Chorozo"') &&
+    cardExtensionsSource.includes('"Master of Chaos"'),
+  "Match 2's new clickable-card records are missing.",
 );
 assert(indexHtml.includes('data-view="optimized"'), "Optimized Round Robin navigation is missing.");
 new vm.Script(await read("service-worker.js"), { filename: "service-worker.js" });
