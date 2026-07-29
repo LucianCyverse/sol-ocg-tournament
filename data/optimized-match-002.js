@@ -232,7 +232,8 @@ const OPTIMIZED_MATCH_002 = {
       "segments": 69,
       "newlyGeneratedClips": 65,
       "sourceCharacters": 10043,
-      "measuredAnalyticsCredits": 5495
+      "initialMeasuredAnalyticsCredits": 5495,
+      "settledAnalyticsCredits": 5526
     },
     "render": {
       "wallTimeSeconds": 1485.787,
