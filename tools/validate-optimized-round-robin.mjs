@@ -232,6 +232,16 @@ assert(
     thirdRendered.verification?.turns === 8,
   "Match 3's certified report binding changed.",
 );
+assert(
+  thirdRendered.media?.sha256 ===
+      "e06a1dc19bbc7f7b44a03377043620bb32aced5280a0e3c46bc539581e567d26" &&
+    thirdRendered.media?.bytes === 42905488 &&
+    thirdRendered.media?.duration === "07:33.72" &&
+    thirdRendered.media?.narration?.voice === "Matilda" &&
+    thirdRendered.media?.narration?.newlyGeneratedClips === 39 &&
+    thirdRendered.media?.narration?.measuredCredits === 3286,
+  "Match 3's verified video or narration binding changed.",
+);
 const optimizedActions = rr.renderedMatches.flatMap((match) =>
   match.games.flatMap((game) =>
   game.turns.flatMap((turn) => turn.actions),
@@ -283,6 +293,24 @@ assert(
   "The generated Match 2 record drifted from its media source.",
 );
 
+const thirdStem =
+  "optimized-round-robin-match-003-chaos-ritual-vs-toon-turbo";
+const thirdPoster = await stat(
+  path.join(root, "media", `${thirdStem}-poster.jpg`),
+);
+const thirdCaptions = await read(path.join("media", `${thirdStem}.vtt`));
+assert(thirdPoster.size > 0, "The Match 3 poster is empty.");
+assert(thirdCaptions.startsWith("WEBVTT\n\n"), "Match 3 captions are not valid WebVTT.");
+assert(
+  !/\d{2}:\d{2}:\d{2},\d{3} -->/.test(thirdCaptions),
+  "SRT comma timings remain in Match 3's VTT.",
+);
+const thirdMedia = JSON.parse(await read("data/optimized-match-003-media.json"));
+assert(
+  JSON.stringify(thirdMedia) === JSON.stringify(thirdRendered.media),
+  "The generated Match 3 record drifted from its media source.",
+);
+
 const workflow = await read(".github/workflows/pages.yml");
 assert(workflow.includes(`${stem}.mp4`), "Pages workflow does not download the optimized MP4.");
 assert(
@@ -299,6 +327,13 @@ assert(
       "6392e3714bdedf322d63fa3544ec5ae2da0d2c9e57516c6d98b316f61ec3b157",
     ),
   "Pages workflow does not download and verify the Match 2 MP4.",
+);
+assert(
+  workflow.includes(`${thirdStem}.mp4`) &&
+    workflow.includes(
+      "e06a1dc19bbc7f7b44a03377043620bb32aced5280a0e3c46bc539581e567d26",
+    ),
+  "Pages workflow does not download and verify the Match 3 MP4.",
 );
 
 const indexHtml = await read("index.html");
@@ -343,6 +378,11 @@ assert(
   serviceWorker.includes("data/optimized-match-003.js"),
   "The PWA does not cache Match 3's narrative.",
 );
+assert(
+  serviceWorker.includes(`${thirdStem}-poster.jpg`) &&
+    serviceWorker.includes(`${thirdStem}.vtt`),
+  "The PWA does not cache Match 3's poster and captions.",
+);
 const manifest = JSON.parse(await read("manifest.webmanifest"));
 assert(manifest.start_url === "./" && manifest.scope === "./", "PWA scope must support GitHub Pages.");
 
@@ -356,6 +396,6 @@ console.log(
     firstPending
       ? `Next pending: ${firstPending.id}${firstPending.gateStatus ? " (approval required)" : ""}`
       : "Next pending: none",
-    `Posters: ${poster.size} and ${secondPoster.size} bytes`,
+    `Posters: ${poster.size}, ${secondPoster.size}, and ${thirdPoster.size} bytes`,
   ].join("\n"),
 );

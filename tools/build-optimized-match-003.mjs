@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { access, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -13,6 +13,20 @@ const presentation = JSON.parse(
 const report = JSON.parse(
   await readFile(path.join(reportRoot, `${reportStem}.json`), "utf8"),
 );
+const mediaPath = path.join(
+  siteRoot,
+  "data",
+  "optimized-match-003-media.json",
+);
+let media;
+try {
+  await access(mediaPath);
+  media = JSON.parse(await readFile(mediaPath, "utf8"));
+} catch (error) {
+  if (error.code !== "ENOENT") {
+    throw error;
+  }
+}
 
 const publicDeckName = (value) =>
   typeof value === "string"
@@ -91,6 +105,7 @@ const match = {
     turns,
     actions,
   },
+  ...(media ? { media } : {}),
 };
 
 const output = `const OPTIMIZED_MATCH_003 = ${JSON.stringify(match, null, 2)};\n`;
