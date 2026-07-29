@@ -217,5 +217,33 @@ const OPTIMIZED_MATCH_002 = {
     "games": 2,
     "turns": 11,
     "actions": 65
+  },
+  "media": {
+    "videoUrl": "https://luciancyverse.github.io/sol-ocg-tournament/media/optimized-round-robin-match-002-power-patron-vs-dark-magician.mp4",
+    "downloadUrl": "https://github.com/LucianCyverse/sol-ocg-tournament/releases/download/optimized-rr-m2-power-dark-0cc6565fc0e4/optimized-round-robin-match-002-power-patron-vs-dark-magician.mp4",
+    "posterUrl": "media/optimized-round-robin-match-002-power-patron-vs-dark-magician-poster.jpg",
+    "captionsUrl": "media/optimized-round-robin-match-002-power-patron-vs-dark-magician.vtt",
+    "duration": "12:22.95",
+    "format": "1280 × 720 H.264/AAC · 30 FPS",
+    "bytes": 76151374,
+    "sha256": "6392e3714bdedf322d63fa3544ec5ae2da0d2c9e57516c6d98b316f61ec3b157",
+    "narration": {
+      "voice": "Matilda",
+      "segments": 69,
+      "newlyGeneratedClips": 65,
+      "sourceCharacters": 10043,
+      "measuredAnalyticsCredits": 5495
+    },
+    "render": {
+      "wallTimeSeconds": 1485.787,
+      "effectiveFramesPerSecond": 15,
+      "frames": 22287,
+      "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+      "averageGpuTemperatureC": 55.31,
+      "peakGpuTemperatureC": 56,
+      "peakGpuMemoryMiB": 1024,
+      "minimumFreeSystemMemoryMiB": 1665,
+      "hardwareThermalThrottleSamples": 0
+    }
   }
 };

@@ -185,6 +185,15 @@ assert(
     "0CC6565FC0E4247B8112440879D17C618526CBDF5798B5E019F9F84A78F03935",
   "Match 2's certified match commitment changed.",
 );
+assert(
+  secondRendered.media?.sha256 ===
+      "6392e3714bdedf322d63fa3544ec5ae2da0d2c9e57516c6d98b316f61ec3b157" &&
+    secondRendered.media.bytes === 76151374 &&
+    secondRendered.media.duration === "12:22.95" &&
+    secondRendered.media.narration?.voice === "Matilda" &&
+    secondRendered.media.narration?.newlyGeneratedClips === 65,
+  "Match 2's verified video or narration binding changed.",
+);
 const optimizedActions = rr.renderedMatches.flatMap((match) =>
   match.games.flatMap((game) =>
   game.turns.flatMap((turn) => turn.actions),
@@ -214,6 +223,28 @@ assert(captions.startsWith("WEBVTT\n\n"), "Captions are not valid WebVTT.");
 assert(captions.includes("00:00:00.300 --> 00:00:01.700"), "Expected first caption timing is missing.");
 assert(!/\d{2}:\d{2}:\d{2},\d{3} -->/.test(captions), "SRT comma timings remain in the VTT.");
 
+const secondStem =
+  "optimized-round-robin-match-002-power-patron-vs-dark-magician";
+const secondPoster = await stat(
+  path.join(root, "media", `${secondStem}-poster.jpg`),
+);
+const secondCaptions = await read(path.join("media", `${secondStem}.vtt`));
+assert(secondPoster.size > 0, "The Match 2 poster is empty.");
+assert(secondCaptions.startsWith("WEBVTT\n\n"), "Match 2 captions are not valid WebVTT.");
+assert(
+  secondCaptions.includes("00:00:00.300 --> 00:00:01.833"),
+  "Match 2's first caption timing is missing.",
+);
+assert(
+  !/\d{2}:\d{2}:\d{2},\d{3} -->/.test(secondCaptions),
+  "SRT comma timings remain in Match 2's VTT.",
+);
+const secondMedia = JSON.parse(await read("data/optimized-match-002-media.json"));
+assert(
+  JSON.stringify(secondMedia) === JSON.stringify(secondRendered.media),
+  "The generated Match 2 record drifted from its media source.",
+);
+
 const workflow = await read(".github/workflows/pages.yml");
 assert(workflow.includes(`${stem}.mp4`), "Pages workflow does not download the optimized MP4.");
 assert(
@@ -223,6 +254,13 @@ assert(
 assert(
   workflow.includes("sky-striker-vs-kewl-tune-82feecd6f515.mp4"),
   "Pages workflow no longer retains the original exhibition MP4.",
+);
+assert(
+  workflow.includes(`${secondStem}.mp4`) &&
+    workflow.includes(
+      "6392e3714bdedf322d63fa3544ec5ae2da0d2c9e57516c6d98b316f61ec3b157",
+    ),
+  "Pages workflow does not download and verify the Match 2 MP4.",
 );
 
 const indexHtml = await read("index.html");
@@ -251,6 +289,12 @@ assert(
 );
 assert(indexHtml.includes('data-view="optimized"'), "Optimized Round Robin navigation is missing.");
 new vm.Script(await read("service-worker.js"), { filename: "service-worker.js" });
+const serviceWorker = await read("service-worker.js");
+assert(
+  serviceWorker.includes(`${secondStem}-poster.jpg`) &&
+    serviceWorker.includes(`${secondStem}.vtt`),
+  "The PWA does not cache Match 2's poster and captions.",
+);
 const manifest = JSON.parse(await read("manifest.webmanifest"));
 assert(manifest.start_url === "./" && manifest.scope === "./", "PWA scope must support GitHub Pages.");
 
@@ -264,6 +308,6 @@ console.log(
     firstPending
       ? `Next pending: ${firstPending.id}${firstPending.gateStatus ? " (approval required)" : ""}`
       : "Next pending: none",
-    `Poster: ${poster.size} bytes`,
+    `Posters: ${poster.size} and ${secondPoster.size} bytes`,
   ].join("\n"),
 );
