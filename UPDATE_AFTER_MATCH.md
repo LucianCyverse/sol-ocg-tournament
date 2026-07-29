@@ -1,11 +1,23 @@
-# Updating after a new match
+# Updating after a new tournament or rendered match
 
-1. Ask Sol to generate an updated `tournament-data.json`.
-2. Download the new file.
-3. In your GitHub repository, open `data/tournament-data.json`.
-4. Choose Edit or Upload files and replace it.
-5. Commit directly to `main`.
-6. Netlify detects the commit and deploys automatically.
-7. Open the web app on iPhone. The data file is configured not to remain stale; close and reopen once if needed.
+## Locked tournament history
 
-To add permanent translations, replace `data/cards.json` the same way.
+The current tournament database is embedded in `index.html`. Update it only
+from the canonical audited tournament source, and keep the locked standings
+and unique-pairing assertions intact.
+
+## Rendered exhibitions
+
+1. Generate and verify the match report, presentation JSON, narration, captions,
+   and final MP4 in SOL Duel Theater.
+2. Add the exhibition record to `data/rendered-matches.js`.
+3. Add a poster and WebVTT captions under `media/`.
+4. Upload the canonical MP4 to a versioned GitHub Release.
+5. Add the versioned asset URL and SHA-256 to
+   `.github/workflows/pages.yml`.
+6. Push the viewer update to `main`.
+7. Confirm the Pages workflow passes, then verify the Theater tab, native video
+   controls, captions, and full narrative on the public viewer.
+
+Rendered exhibitions must remain separate from tournament standings unless the
+canonical tournament itself is deliberately revised.

@@ -1,10 +1,20 @@
-# SOL OCG Tournament Viewer — Final Architecture
+# SOL OCG Tournament Viewer
 
-## Files you update
-- `data/tournament-data.json`: matches, standings, version, updated date
-- `data/cards.json`: known card names and permanent translation overrides
+The public iPhone viewer is published at:
 
-The application files normally remain unchanged.
+`https://luciancyverse.github.io/sol-ocg-tournament/`
+
+## Active data
+
+- `index.html`: locked tournament history, standings, Deck Lab, and viewer code
+- `data/rendered-matches.js`: rendered exhibitions shown in the Theater tab
+- `data/cards.json`: legacy card data retained for compatibility
+- `media/`: poster images and WebVTT captions
+
+Rendered exhibitions are deliberately separate from the locked tournament
+standings. The canonical MP4 is stored as a GitHub Release asset. The Pages
+workflow verifies its SHA-256, adds it to the published site, and then deploys
+the iPhone-playable copy without committing the large video to Git history.
 
 ## Local test
 Use a local web server; do not double-click `index.html`.
@@ -15,8 +25,10 @@ python3 -m http.server 8080
 ```
 Then open `http://localhost:8080`.
 
-## Netlify
-This folder is deployable as-is. `netlify.toml` sets the publish directory and prevents stale tournament-data caching.
+## Publishing
+
+`.github/workflows/pages.yml` publishes the site after a push to `main`.
+GitHub Pages must use the GitHub Actions publishing source.
 
 ## Report completeness
 - Elfnote vs. Kewl Tune: full structured report from the available transcript.

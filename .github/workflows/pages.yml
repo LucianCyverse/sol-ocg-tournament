@@ -1,0 +1,58 @@
+name: Publish SOL OCG Tournament viewer
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  VIDEO_NAME: sky-striker-vs-kewl-tune-82feecd6f515.mp4
+  VIDEO_SHA256: 80F44C5DAB4C86C7FD330F1A112905E4980153AA806E39D8BCAA21D560FF30F9
+  VIDEO_URL: https://github.com/LucianCyverse/sol-ocg-tournament/releases/download/sky-kewl-82feecd6f515/sky-striker-vs-kewl-tune-82feecd6f515.mp4
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out viewer source
+        uses: actions/checkout@v6
+
+      - name: Assemble the published site
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _site/media
+          cp index.html manifest.webmanifest service-worker.js _site/
+          cp -R assets data _site/
+          cp media/*.jpg media/*.vtt _site/media/
+          curl --fail --location --retry 3 --output "_site/media/${VIDEO_NAME}" "${VIDEO_URL}"
+          echo "${VIDEO_SHA256}  _site/media/${VIDEO_NAME}" | sha256sum --check
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload the GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
