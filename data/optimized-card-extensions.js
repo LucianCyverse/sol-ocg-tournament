@@ -73,4 +73,56 @@ const OPTIMIZED_CARD_EXTENSIONS = {
     role:
       "Powerful hand-activated monster removal whose permanent Attribute lock must be accounted for by the autonomous pilot.",
   },
+  "Cyberse Code Magician": {
+    apiName: "Cyberse Code Magician",
+    status: "Released-card database entry",
+    type: "Ritual Effect Monster",
+    race: "Cyberse",
+    attribute: "DARK",
+    level: 7,
+    atk: 2500,
+    def: 2000,
+    effect:
+      'You can Ritual Summon this card with "Cynet Ritual". If a Link Monster you control would be used as Link Material for a Cyberse monster, this card in your hand can also be used as material. If this card is sent from the hand or field to the GY, it can send a Cyberse monster from the Deck to the GY, or Special Summon that monster if this Ritual Summoned card was sent, then restricts Extra Deck summons to Cyberse monsters for the rest of the turn.',
+    role:
+      "Registered Toon side-plan Ritual monster and Cyberse Link-conversion resource.",
+  },
+  "Maliss <P> Chessy Cat": {
+    apiName: "Maliss <P> Chessy Cat",
+    status: "Released-card database entry",
+    type: "Effect Monster",
+    race: "Cyberse",
+    attribute: "DARK",
+    level: 3,
+    atk: 1500,
+    def: 300,
+    effect:
+      'A monster destroyed by battle with a "Maliss" Link Monster that points to this card is banished. During the Main Phase, it can banish a "Maliss" card from the hand to draw 2 cards. If banished, it can pay 300 LP to Special Summon itself, then restrict Extra Deck summons to Link Monsters for the rest of the turn.',
+    role:
+      "Maliss draw engine, Link material, and banished-zone extender in Toon's registered side package.",
+  },
+  "Red Reboot": {
+    apiName: "Red Reboot",
+    status: "Released-card database entry",
+    type: "Trap Card",
+    race: "Counter",
+    effect:
+      "When the opponent activates a Trap, negate its activation and Set it face-down, then they can Set another Trap directly from the Deck. After resolution, the opponent cannot activate Trap Cards for the rest of the turn. It can be activated from the hand by paying half of the controller's LP.",
+    role:
+      "Registered Elfnote side-plan Counter Trap for forcing a turn through opposing back row.",
+  },
+  "Revolution Synchron": {
+    apiName: "Revolution Synchron",
+    status: "Released-card database entry",
+    type: "Tuner Monster",
+    race: "Machine",
+    attribute: "EARTH",
+    level: 3,
+    atk: 900,
+    def: 1400,
+    effect:
+      'When Synchro Summoning a "Power Tool" monster or a Level 7 or 8 Dragon, this card in the hand can be used as material. While it is in the GY and a Level 7 or higher Synchro Monster is controlled, it can send the top card of the Deck to the GY to Special Summon itself and become Level 1.',
+    role:
+      "Elfnote Tuner that bridges into Level 7 or 8 Dragon Synchros and can recur from the Graveyard.",
+  },
 };

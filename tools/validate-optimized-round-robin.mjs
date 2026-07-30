@@ -22,6 +22,9 @@ vm.runInContext(await read("data/optimized-match-002.js"), context, {
 vm.runInContext(await read("data/optimized-match-003.js"), context, {
   filename: "data/optimized-match-003.js",
 });
+vm.runInContext(await read("data/optimized-match-004.js"), context, {
+  filename: "data/optimized-match-004.js",
+});
 vm.runInContext(
   `${await read("data/optimized-round-robin.js")}
 globalThis.__optimizedRoundRobin = OPTIMIZED_ROUND_ROBIN;
@@ -104,6 +107,7 @@ const pending = matches.filter((match) => match.status === "pending");
 const first = matches[0];
 const second = matches[1];
 const third = matches[2];
+const fourth = matches[3];
 assert(
   complete.length === rr.checkpoint.completedMatches &&
     pending.length === rr.checkpoint.pendingMatches &&
@@ -151,6 +155,19 @@ assert(
     third.result.games["toon-turbo"] === 0,
   "Match 3 must remain a 2-0 Chaos Ritual win.",
 );
+assert(third.reviewStatus === "approved", "Match 3 must be approved before Match 4.");
+assert(
+  fourth.id === "orr-r01-m04-toon-elfnote" &&
+    fourth.deckA === "toon" &&
+    fourth.deckB === "elfnote",
+  "Match 4 is not Toon vs. Elfnote.",
+);
+assert(
+  fourth.result?.winner === "elfnote" &&
+    fourth.result.games.toon === 0 &&
+    fourth.result.games.elfnote === 2,
+  "Match 4 must remain a 2-0 Elfnote win.",
+);
 const firstPending = pending[0];
 assert(
   firstPending?.id === rr.checkpoint.nextMatchId,
@@ -164,11 +181,11 @@ assert(
   "Completed results must advance sequentially through the published schedule.",
 );
 if (rr.reviewGate.status === "awaiting-user-approval") {
-  assert(third.reviewStatus === "awaiting-user-approval", "Match 3 must await user approval.");
+  assert(fourth.reviewStatus === "awaiting-user-approval", "Match 4 must await user approval.");
   assert(
-    firstPending?.id === "orr-r01-m04-toon-elfnote" &&
-      firstPending.gateStatus === "blocked-by-match-3-review",
-    "Match 4 must remain visibly blocked by the Match 3 review.",
+    firstPending?.id === "orr-r02-m05-sky-striker-dark-magician" &&
+      firstPending.gateStatus === "blocked-by-match-4-review",
+    "Match 5 must remain visibly blocked by the Match 4 review.",
   );
 }
 
@@ -182,11 +199,12 @@ assert(rr.renderedMatch.id === first.id, "The featured rendered match must point
 assert(rr.renderedMatch.games.length === 2, "The full two-game narrative is missing.");
 assert(
   Array.isArray(rr.renderedMatches) &&
-    rr.renderedMatches.length === 3 &&
+    rr.renderedMatches.length === 4 &&
     rr.renderedMatches[0].id === first.id &&
     rr.renderedMatches[1].id === second.id &&
-    rr.renderedMatches[2].id === third.id,
-  "The three completed matches are not published in schedule order.",
+    rr.renderedMatches[2].id === third.id &&
+    rr.renderedMatches[3].id === fourth.id,
+  "The four completed matches are not published in schedule order.",
 );
 const secondRendered = rr.renderedMatches[1];
 assert(secondRendered.games.length === 2, "Match 2's full two-game narrative is missing.");
@@ -242,6 +260,26 @@ assert(
     thirdRendered.media?.narration?.measuredCredits === 3286,
   "Match 3's verified video or narration binding changed.",
 );
+const fourthRendered = rr.renderedMatches[3];
+assert(fourthRendered.games.length === 2, "Match 4's full two-game narrative is missing.");
+assert(
+  fourthRendered.games.reduce(
+    (count, game) =>
+      count + game.turns.reduce((turnCount, turn) => turnCount + turn.actions.length, 0),
+    0,
+  ) === 58,
+  "Match 4 must retain all 58 certified presentation actions.",
+);
+assert(
+  fourthRendered.verification?.matchCommitment ===
+      "2AA4CD3083A917445002F0F4D6F7C38546CE9BEC6577FA02FFC8F2B73FCEC844" &&
+    fourthRendered.verification?.certificationCommitment ===
+      "D326C2F03F71091419ED637E9DC77E4A02F798FF5D2AFB05B0A43E3B26BC7A8F" &&
+    fourthRendered.verification?.pilotDecisions === 740 &&
+    fourthRendered.verification?.releaseBlockingCounters === 0 &&
+    fourthRendered.verification?.turns === 14,
+  "Match 4's certified report binding changed.",
+);
 const optimizedActions = rr.renderedMatches.flatMap((match) =>
   match.games.flatMap((game) =>
   game.turns.flatMap((turn) => turn.actions),
@@ -253,7 +291,7 @@ assert(
 );
 assert(
   !optimizedActions.some((action) =>
-    /^(Sky Striker|Kewl Tune|Power Patron|Dark Magician|Chaos Ritual|Toon Turbo) draws [^.]+\./.test(action),
+    /^(Sky Striker|Kewl Tune|Power Patron|Dark Magician|Chaos Ritual|Toon Turbo|Toon|Elfnote) draws [^.]+\./.test(action),
   ),
   "A turn-draw card name leaked into the optimized description narrative.",
 );
@@ -349,6 +387,8 @@ assert(
     indexHtml.indexOf('src="data/optimized-match-002.js"') <
       indexHtml.indexOf('src="data/optimized-match-003.js"') &&
     indexHtml.indexOf('src="data/optimized-match-003.js"') <
+      indexHtml.indexOf('src="data/optimized-match-004.js"') &&
+    indexHtml.indexOf('src="data/optimized-match-004.js"') <
       indexHtml.indexOf('src="data/optimized-round-robin.js"'),
   "Optimized matches must load between the preserved exhibition and tournament data.",
 );
@@ -363,7 +403,11 @@ assert(
     cardExtensionsSource.includes('"Rahamu, Envoy of the Sacred Tome"') &&
     cardExtensionsSource.includes('"Toon Dark Magician Girl"') &&
     cardExtensionsSource.includes('"Toon Table of Contents"') &&
-    cardExtensionsSource.includes('"Dominus Spark"'),
+    cardExtensionsSource.includes('"Dominus Spark"') &&
+    cardExtensionsSource.includes('"Cyberse Code Magician"') &&
+    cardExtensionsSource.includes('"Maliss <P> Chessy Cat"') &&
+    cardExtensionsSource.includes('"Red Reboot"') &&
+    cardExtensionsSource.includes('"Revolution Synchron"'),
   "Clickable-card records required by the optimized matches are missing.",
 );
 assert(indexHtml.includes('data-view="optimized"'), "Optimized Round Robin navigation is missing.");
@@ -377,6 +421,10 @@ assert(
 assert(
   serviceWorker.includes("data/optimized-match-003.js"),
   "The PWA does not cache Match 3's narrative.",
+);
+assert(
+  serviceWorker.includes("data/optimized-match-004.js"),
+  "The PWA does not cache Match 4's narrative.",
 );
 assert(
   serviceWorker.includes(`${thirdStem}-poster.jpg`) &&

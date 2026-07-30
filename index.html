@@ -106,7 +106,7 @@ nav button.active,.primary{background:var(--accent);border-color:var(--accent);c
     <p class="final-note">Nine decks, nine rounds, and 36 best-of-three matches. Decks are optimized for their own strongest general play patterns rather than hard-coded for every opponent.</p>
     <div id="optimizedProgress" class="progress-grid"></div>
   </div>
-  <div id="optimizedReviewGate" class="panel review-gate"><h3>Paused for Match 2 review</h3><p id="optimizedReviewMessage" class="final-note"></p></div>
+  <div id="optimizedReviewGate" class="panel review-gate"><h3>Paused for Match 4 review</h3><p id="optimizedReviewMessage" class="final-note"></p></div>
   <div class="panel optimized-standings"><h2>Live optimized standings</h2><div id="optimizedStandingsList"></div><p class="final-note">Ordered by match wins, game differential, then game wins. Unplayed matches do not affect the table.</p></div>
   <div class="panel"><h2>Round schedule</h2><p id="optimizedScheduleNote" class="muted"></p><div id="optimizedSchedule"></div></div>
   <div>
@@ -121,6 +121,7 @@ nav button.active,.primary{background:var(--accent);border-color:var(--accent);c
 <script src="data/rendered-matches.js"></script>
 <script src="data/optimized-match-002.js"></script>
 <script src="data/optimized-match-003.js"></script>
+<script src="data/optimized-match-004.js"></script>
 <script src="data/optimized-round-robin.js"></script>
 <script src="data/optimized-card-extensions.js"></script>
 <script>
@@ -284,7 +285,7 @@ function renderOptimizedRoundRobin(){
  $("optimizedReviewMessage").textContent=rr.reviewGate.message;
  $("optimizedReviewGate").style.display=rr.reviewGate.status==="awaiting-user-approval"?"block":"none";
  $("optimizedScheduleNote").textContent=rr.reviewGate.status==="awaiting-user-approval"
-   ?"Match 3 is staged as the next matchup, but it will remain pending until Match 2 is approved."
+   ?`Match ${next?.number||""} is staged as the next matchup, but it will remain pending until the completed match is approved.`
    :next
      ?`The next scheduled matchup is Match ${next.number}: ${optimizedDeckName(next.deckA)} vs. ${optimizedDeckName(next.deckB)}.`
      :"All scheduled matches are complete.";
