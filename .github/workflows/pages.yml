@@ -28,6 +28,9 @@ env:
   OPTIMIZED_MATCH_3_VIDEO_NAME: optimized-round-robin-match-003-chaos-ritual-vs-toon-turbo.mp4
   OPTIMIZED_MATCH_3_VIDEO_SHA256: e06a1dc19bbc7f7b44a03377043620bb32aced5280a0e3c46bc539581e567d26
   OPTIMIZED_MATCH_3_VIDEO_URL: https://github.com/LucianCyverse/sol-ocg-tournament/releases/download/optimized-rr-m3-chaos-toon-a00ca92ce9f8/optimized-round-robin-match-003-chaos-ritual-vs-toon-turbo.mp4
+  OPTIMIZED_MATCH_4_VIDEO_NAME: optimized-round-robin-match-004-toon-vs-elfnote.mp4
+  OPTIMIZED_MATCH_4_VIDEO_SHA256: 0752fe0d287f778a36c9596f2d75e89ea0dd5f7869ec94a67825d24f655c9b7f
+  OPTIMIZED_MATCH_4_VIDEO_URL: https://github.com/LucianCyverse/sol-ocg-tournament/releases/download/optimized-rr-m4-toon-elfnote-2aa4cd3083a9/optimized-round-robin-match-004-toon-vs-elfnote.mp4
 
 jobs:
   build:
@@ -55,6 +58,8 @@ jobs:
           echo "${OPTIMIZED_MATCH_2_VIDEO_SHA256}  _site/media/${OPTIMIZED_MATCH_2_VIDEO_NAME}" | sha256sum --check
           curl --fail --location --retry 3 --output "_site/media/${OPTIMIZED_MATCH_3_VIDEO_NAME}" "${OPTIMIZED_MATCH_3_VIDEO_URL}"
           echo "${OPTIMIZED_MATCH_3_VIDEO_SHA256}  _site/media/${OPTIMIZED_MATCH_3_VIDEO_NAME}" | sha256sum --check
+          curl --fail --location --retry 3 --output "_site/media/${OPTIMIZED_MATCH_4_VIDEO_NAME}" "${OPTIMIZED_MATCH_4_VIDEO_URL}"
+          echo "${OPTIMIZED_MATCH_4_VIDEO_SHA256}  _site/media/${OPTIMIZED_MATCH_4_VIDEO_NAME}" | sha256sum --check
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

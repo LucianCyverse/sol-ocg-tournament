@@ -1,0 +1,16 @@
+{
+  "videoUrl": "https://luciancyverse.github.io/sol-ocg-tournament/media/optimized-round-robin-match-004-toon-vs-elfnote.mp4",
+  "downloadUrl": "https://github.com/LucianCyverse/sol-ocg-tournament/releases/download/optimized-rr-m4-toon-elfnote-2aa4cd3083a9/optimized-round-robin-match-004-toon-vs-elfnote.mp4",
+  "posterUrl": "media/optimized-round-robin-match-004-toon-vs-elfnote-poster.jpg",
+  "captionsUrl": "media/optimized-round-robin-match-004-toon-vs-elfnote.vtt",
+  "duration": "10:10.73",
+  "format": "1280 × 720 H.264/AAC · 30 FPS",
+  "bytes": 56471526,
+  "sha256": "0752fe0d287f778a36c9596f2d75e89ea0dd5f7869ec94a67825d24f655c9b7f",
+  "narration": {
+    "voice": "Matilda",
+    "newlyGeneratedClips": 54,
+    "sourceCharacters": 7191,
+    "measuredCredits": 3756
+  }
+}
